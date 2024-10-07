@@ -45,6 +45,13 @@
           cargoLock.outputHashes = {
             "rustc_codegen_spirv-0.9.0" = "sha256-99YuiuPVb/OLTmFN/TTlDhoKpkO8hMwmdQtPHym7dag=";
           };
+          dontCargoSetupPostUnpack = true;
+          postUnpack = ''
+            mkdir -p .cargo
+            cat "$cargoDeps"/.cargo/config | sed "s|cargo-vendor-dir|$cargoDeps|" >> .cargo/config
+            # HACK(eddyb) bypass cargoSetupPostPatchHook.
+            export cargoDepsCopy="$cargoDeps"
+          '';
           nativeBuildInputs = [pkgs.makeWrapper];
           configurePhase = ''
             export RUNNER_DIR="$out/repo/runner"
